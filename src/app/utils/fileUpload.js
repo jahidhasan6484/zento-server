@@ -15,6 +15,7 @@ const singleImageUploader = (req, res, next) => {
       });
     }
 
+    // If it's a POST request, require the image file
     if (req.method === "POST" && !req.file) {
       return res.status(400).json({
         success: false,
@@ -22,10 +23,14 @@ const singleImageUploader = (req, res, next) => {
       });
     }
 
+    // For PUT requests, set the image URL only if a file is uploaded
     const basePath = `${req.protocol}://${req.get("host")}/api/public/uploads`;
     const imageUrl = req.file ? `${basePath}/${req.file.filename}` : null;
 
-    req.image = imageUrl;
+    // Attach imageUrl to the request object if an image was uploaded
+    if (imageUrl) {
+      req.image = imageUrl;
+    }
 
     next();
   });
