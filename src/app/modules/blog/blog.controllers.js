@@ -195,6 +195,28 @@ const blogCount = async (req, res) => {
   }
 };
 
+const getAllBlogs = async (req, res) => {
+  try {
+    const myBlogs = await Blog.find().lean();
+
+    const populatedBlogs = await Promise.all(
+      myBlogs.map(async (blog) => {
+        const author = await User.findById(blog.authorId).select("name image");
+        return { ...blog, author };
+      })
+    );
+
+    res.status(200).json({
+      data: populatedBlogs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while fetching blogs",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   addBlog,
   myBlogs,
@@ -202,4 +224,5 @@ module.exports = {
   getBlogById,
   updateBlog,
   blogCount,
+  getAllBlogs,
 };

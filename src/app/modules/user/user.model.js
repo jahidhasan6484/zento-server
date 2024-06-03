@@ -16,6 +16,23 @@ const userSchema = new Schema(
     image: {
       type: String,
     },
+    address: {
+      type: String,
+    },
+    dateOfBirth: {
+      type: Date,
+    },
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other"],
+    },
+    maritalStatus: {
+      type: String,
+      enum: ["Single", "Married", "Divorced", "Widowed"],
+    },
+    contactNumber: {
+      type: String,
+    },
   },
   {
     timestamps: true,

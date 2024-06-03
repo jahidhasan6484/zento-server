@@ -7,6 +7,7 @@ const {
   getBlogById,
   updateBlog,
   blogCount,
+  getAllBlogs,
 } = require("./blog.controllers");
 const { singleImageUploader } = require("../../utils/fileUpload");
 const route = express.Router();
@@ -17,5 +18,6 @@ route.delete("/delete", tokenValidation, deleteBlog);
 route.get("/one", getBlogById);
 route.patch("/update", tokenValidation, singleImageUploader, updateBlog);
 route.get("/count", tokenValidation, blogCount);
+route.get("/all", getAllBlogs);
 
 module.exports = route;
