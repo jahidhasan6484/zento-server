@@ -1,13 +1,10 @@
 const tags = require("../../utils/localDB");
 const User = require("../user/user.model");
 const Blog = require("./blog.model");
-const fs = require("fs");
-const path = require("path");
 
 const addBlog = async (req, res) => {
   try {
-    const { title, content, tag } = req.body;
-    const image = req.image;
+    const { title, content, tag, image } = req.body;
     const email = req.email;
 
     const user = await User.findOne({ email });
@@ -109,9 +106,7 @@ const getBlogById = async (req, res) => {
 const updateBlog = async (req, res) => {
   try {
     const { id } = req.query;
-
-    const { title, content, tag } = req.body;
-    const newImage = req?.image;
+    const newData = req.body;
     const email = req.email;
 
     const user = await User.findOne({ email });
@@ -131,33 +126,14 @@ const updateBlog = async (req, res) => {
         .json({ message: "You are not authorized to update this blog" });
     }
 
-    // Update blog fields
-    blog.title = title;
-    blog.content = content;
-    blog.tag = tag;
+    // Update blog fields with newData
+    const updatedBlog = await Blog.findOneAndUpdate({ _id: id }, newData, {
+      new: true,
+    });
 
-    // If there's a new image, update the image URL
-    if (newImage) {
-      // Optionally, delete the old image file if it exists
-      if (blog.image) {
-        const oldImagePath = path.join(
-          __dirname,
-          "..",
-          "public",
-          "uploads",
-          path.basename(blog.image)
-        );
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
-        }
-      }
-
-      blog.image = newImage;
-    }
-
-    await blog.save();
-
-    res.status(200).json({ message: "Blog updated successfully", blog });
+    res
+      .status(200)
+      .json({ message: "Blog updated successfully", data: updatedBlog });
   } catch (error) {
     res.status(500).json({
       message: "An error occurred while updating the blog",
