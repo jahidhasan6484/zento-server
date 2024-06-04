@@ -17,4 +17,16 @@ const blogRoutes = require("./app/modules/blog/blog.routes");
 app.use("/api/user", userRoutes);
 app.use("/api/blog", blogRoutes);
 
+app.get("/", (req, res) => {
+  try {
+    res.send({
+      message: "Welcome to Zento server",
+    });
+  } catch (error) {
+    res.send({
+      message: "Something went wrong",
+    });
+  }
+});
+
 module.exports = app;
