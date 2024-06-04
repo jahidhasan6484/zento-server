@@ -217,6 +217,55 @@ const getAllBlogs = async (req, res) => {
   }
 };
 
+const getKeyBlogs = async (req, res) => {
+  try {
+    const { key } = req.query;
+    if (!key) {
+      return res.status(400).json({
+        message: "Tag query parameter is required",
+      });
+    }
+
+    const myBlogs = await Blog.find({ tag: key });
+
+    const populatedBlogs = await Promise.all(
+      myBlogs.map(async (blog) => {
+        const author = await User.findById(blog.authorId).select("name image");
+        return { ...blog.toObject(), author };
+      })
+    );
+
+    res.status(200).json({
+      data: populatedBlogs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while fetching blogs",
+      error: error.message,
+    });
+  }
+};
+
+const totalBlogCount = async (req, res) => {
+  try {
+    const tagCounts = {};
+
+    for (const tag of tags) {
+      const count = await Blog.countDocuments({ tag });
+      tagCounts[tag] = count;
+    }
+
+    res.status(200).json({
+      data: tagCounts,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while fetching blog counts",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   addBlog,
   myBlogs,
@@ -225,4 +274,6 @@ module.exports = {
   updateBlog,
   blogCount,
   getAllBlogs,
+  totalBlogCount,
+  getKeyBlogs,
 };
