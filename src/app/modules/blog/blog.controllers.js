@@ -24,9 +24,16 @@ const addBlog = async (req, res) => {
 
     res.status(201).json({ message: "Blog added successfully" });
   } catch (error) {
-    res.status(500).json({
-      message: "An error occurred while adding the blog",
-    });
+    console.log("error", error.message);
+    if (
+      error.message.includes(`The value of "offset" is out of range`) ||
+      error.message.includes("request entity too large")
+    ) {
+      return res.status(500).json({ message: "Too large files" });
+    }
+    res
+      .status(500)
+      .json({ message: "An error occurred while adding the blog" });
   }
 };
 
